@@ -1,3 +1,5 @@
+import shutil
+
 from django.db import IntegrityError
 from django.http import JsonResponse
 from rest_framework.exceptions import ValidationError
@@ -21,11 +23,13 @@ class UploadFileViewSet(ModelViewSet):
     def perform_create(self, serializer):
         try:
             file = self.request.FILES.popitem()[1][0]
+            # необходимо скопировать файл в каталог проекты, чтобы затем использоватеть его в тасках
+            shutil.copyfile(file.temporary_file_path(), f'file_storage/{file.name}')
             serializer.save(file_name=file.name,
                             owner_id=self.request.user.id,
                             file_size=round(file.size/1000000, 2),
                             file_type=file.content_type)
-            upload_to_minio.delay(f'user{self.request.user.id}', file.name, file.temporary_file_path())
+            upload_to_minio.delay(f'user{self.request.user.id}', file.name, f'file_storage/{file.name}')
 
         except KeyError:
             raise ValidationError({"Status": False, "Errors": "Пожалуйста, отправьте файл"})
@@ -44,6 +48,7 @@ class ListFiles(APIView):
         files_list = list_files.delay(self.request.user.id).get()
         if files_list is None:
             return JsonResponse({"Status": False, "Errors": "У вас нет загруженных файлов"})
+        # формирование словаря в формате {номер файла: названиеЪ
         files_dict = dict(zip([i for i in range(1, len(files_list) + 1)], files_list))
         return JsonResponse({"Status": True} | files_dict)
 

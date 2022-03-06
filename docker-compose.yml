@@ -7,7 +7,7 @@ services:
     volumes:
       - .:/usr/src/app/
     ports:
-      - 8000:8000
+      - "8000:8000"
     env_file:
       - .env.dev
     depends_on:
@@ -24,10 +24,6 @@ services:
       - postgres_data:/var/lib/postgresql/data/
     env_file:
       - .env.dev
-#    environment:
-#      - POSTGRES_USER=some_user
-#      - POSTGRES_PASSWORD=some_password
-#      - POSTGRES_DB=task_db
     ports:
       - "5432:5432"
 
@@ -43,11 +39,6 @@ services:
       - .env.dev
     volumes:
       - minio_data:/var/lib/minio_data/
-#    healthcheck:
-#      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
-#      interval: 30s
-#      timeout: 20s
-#      retries: 3
 
   redis:
     restart: always
@@ -69,18 +60,6 @@ services:
       - .env.dev
     command: celery -A task worker --loglevel=info
 
-#
-#  pgadmin:
-#    container_name: pgadmin4_container
-#    image: dpage/pgadmin4
-#    restart: always
-#    environment:
-#      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-#      PGADMIN_DEFAULT_PASSWORD: root
-#    ports:
-#      - "5050:80"
-#    depends_on:
-#      - db
 volumes:
   postgres_data:
   minio_data:
