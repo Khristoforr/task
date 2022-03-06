@@ -7,13 +7,13 @@ from celery import shared_task
 def fs_server(bucket_name):
     return S3FS(
             bucket_name=f'user{bucket_name}', aws_access_key_id='minioadmin',
-            aws_secret_access_key='minioadmin', endpoint_url='http://127.0.0.1:9000/'
+            aws_secret_access_key='minioadmin', endpoint_url='http://minio:9000/'
         )
 
 
 @shared_task
 def upload_to_minio(bucket_name, file_name, file_path):
-    client = Minio("127.0.0.1:9000/",
+    client = Minio("minio:9000/",
                    access_key="minioadmin",
                    secret_key="minioadmin",
                    secure=False)
