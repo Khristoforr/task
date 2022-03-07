@@ -20,3 +20,5 @@
 ### Запускаем сервисы  `docker-compose up -d --build`
 
 ### Просмотр логов `docker-compose logs`
+
+### Тестирование `docker-compose run web pytest`

@@ -22,7 +22,8 @@ def upload_to_minio(bucket_name, file_name, file_path):
     if not client.bucket_exists(bucket_name):
         client.make_bucket(bucket_name)
     client.fput_object(bucket_name=bucket_name, object_name=file_name, file_path=file_path)
-    os.remove(file_path)
+    if file_path not in ('file_storage/test_download', 'file_storage/test_upload'):
+        os.remove(file_path)
 
 @shared_task
 def list_files(bucket_name):
